@@ -18,7 +18,7 @@ class Tear:
         self.birth = birth
 
 tear_life = 10 # sec
-tear_rate = 2 # 1 tear a sec
+tear_rate = 1 # 1 tear a sec
 x_velocity_magnitude = 20 # sec
 initial_y_velocity = -30
 a = 15 # accel of g
@@ -130,7 +130,9 @@ while True:
     #draw_egg(frame, (200, 200), (time.time() * 360) % 360, 0.5)
     #wip: add drawing code here based on left_corner, right_corner
 
+    frame = cv2.resize(frame, (0,0), fx=2, fy=2) 
     cv2.imshow('Boiled Eggs', frame)
+
     if tear_generated:
         last_tear = current
         tear_generated = False
