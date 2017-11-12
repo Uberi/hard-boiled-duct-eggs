@@ -4,8 +4,17 @@ import face_recognition
 import cv2
 from numpy import array
 import numpy as np
+import time
+from collections import deque, namedtuple
+import math
 
-from PIL import Image, ImageDraw
+Tear = namedtuple("Tear", ["x", "y", "x_velocity", "y_velocity", "rot", "scale", "birth"])
+
+tear_life = 3 # sec
+x_velocity_magnitude = 5 # sec
+a = 9.8 # accel of g
+T = deque()
+last_t = None
 
 WEBCAM_INDEX = 0
 DEBUG = True
@@ -19,6 +28,26 @@ def find_eye_outer_corners(left_eye_points, right_eye_points):
 
 def ndarray_to_coordinate(ndarray):
     return int(ndarray[0]), int(ndarray[1])
+
+def step(tear, dt):
+    tear.x = tear.x_velocity * dt + tear.x
+    tear.y = tear.y_velocity * dt + tear.y
+    tear.y_velocity = a * dt * tear.y_velocity
+    tear.rot = math.atan2(tear.y_velocity, tear.x_velocity)
+    # TODO scale
+
+# time.time is different for each tear, so might be better to either store 
+# last update in each tear or just use 1 for all tears
+def step_all(Q):
+    global last_t
+    global tear_life
+    c = time.time
+    dt = last_t - c
+    while c - Q[0].birth > tear_life:
+        Q.popleft()
+    for t in Q:
+        step(t, dt)
+    last_t = c
 
 while True:
     status, frame = video_capture.read()
