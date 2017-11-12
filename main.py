@@ -17,15 +17,15 @@ class Tear:
         self.scale = scale
         self.birth = birth
 
-tear_life = 20 # sec
-tear_rate = 0.5 # 1 tear a sec
+tear_life = 10 # sec
+tear_rate = 2 # 1 tear a sec
 x_velocity_magnitude = 20 # sec
 initial_y_velocity = -30
-a = 10 # accel of g
+a = 15 # accel of g
 T = deque()
 last_step = time.time()
 last_tear = -20
-scale_rate = 0.5
+scale_rate = 0.04
 
 WEBCAM_FRAME_SIZE = (640, 480)
 WEBCAM_INDEX = 0
@@ -54,10 +54,10 @@ def ndarray_to_coordinate(ndarray):
     return int(ndarray[0]), int(ndarray[1])
 
 def step(tear, dt):
-    tear.xy = (int(tear.x_velocity * dt + tear.xy[0]), int(tear.y_velocity * dt + tear.xy[1]))
+    tear.xy = (tear.x_velocity * dt + tear.xy[0], tear.y_velocity * dt + tear.xy[1])
     tear.y_velocity = a * dt + tear.y_velocity
     tear.rot = math.atan2(tear.y_velocity, tear.x_velocity)
-    tear.scale = int(dt * scale_rate + tear.scale)
+    tear.scale = dt * scale_rate + tear.scale
 
 # time.time() is different for each tear, so might be better to either store 
 # last update in each tear or just use 1 for all tears
